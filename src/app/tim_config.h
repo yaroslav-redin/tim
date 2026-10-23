@@ -36,7 +36,7 @@ static const char DB_FILE_NAME[] = "tim.db";
  * работу без сохранения данных — оператору предложено перезапустить
  * db/create-db.sh.
  */
-static const std::uint32_t EXPECTED_DB_SCHEMA_VERSION = 2;
+static const std::uint32_t EXPECTED_DB_SCHEMA_VERSION = 3;
 
 /**
  * Максимальная глубина рекурсивного вызова ssh_inetd::dispatch.

@@ -44,6 +44,9 @@ R"({
     // Рабочий каталог: сюда складываются БД (tim.db) и SSH host-key.
     "data_dir": "%s",
 
+    // Каталог со скриптами миграции схемы БД (migrate-N-to-M.sql).
+    "migrations_dir": "%s",
+
     // Язык сообщений: "ru" или "en".
     "language": "ru"
 }
@@ -107,7 +110,9 @@ tim::settings tim::settings::load_or_create(const std::string &explicit_path)
                       ec.message().c_str());
             return s;
         }
-        const std::string body = tim::sprintf(CONFIG_TEMPLATE, s.data_dir.string().c_str());
+        const std::string body = tim::sprintf(CONFIG_TEMPLATE,
+                                              s.data_dir.string().c_str(),
+                                              s.migrations_dir.string().c_str());
         if (!tim::write_to_file(path, body))
             TIM_TRACE(warning,
                       "Failed to write default config to '%s'. Using defaults.",
@@ -148,6 +153,8 @@ tim::settings tim::settings::load_or_create(const std::string &explicit_path)
         s.mqtt_url = j.value("mqtt_url", s.mqtt_url);
     if (j.contains("data_dir"))
         s.data_dir = j.value("data_dir", s.data_dir.string());
+    if (j.contains("migrations_dir"))
+        s.migrations_dir = j.value("migrations_dir", s.migrations_dir.string());
     if (j.contains("language"))
         s.language = j.value("language", s.language);
 

@@ -7,6 +7,7 @@
 #include "tim_ssh_inetd.h"
 #include "tim_mqtt_client.h"
 #include "tim_sqlite_db.h"
+#include "tim_sqlite_migrate.h"
 #include "tim_trace.h"
 #include "tim_translator.h"
 
@@ -86,19 +87,25 @@ tim::application::application(const std::string &config_path)
                   _d->_db->path().string().c_str());
     else
     {
-        // Проверяем PRAGMA user_version: при несовпадении со схемой,
-        // ожидаемой бинарником, лучше явно закрыть БД и работать без
-        // сохранения данных, чем втихую писать/читать несуществующие
-        // колонки. Оператору сообщаем, как пересобрать БД.
+        // Проверяем PRAGMA user_version. Если схема старее ожидаемой,
+        // пробуем честную миграцию с сохранением данных (migrate_db).
+        // Если миграция невозможна (нет скрипта, БД новее бинарника, ошибка
+        // в скрипте), лучше явно закрыть БД и работать без сохранения
+        // данных, чем втихую писать/читать несуществующие колонки.
         std::uint32_t db_version = 0;
         if (_d->_db->get_version(db_version)
-                && db_version != tim::EXPECTED_DB_SCHEMA_VERSION)
+                && db_version != tim::EXPECTED_DB_SCHEMA_VERSION
+                && !tim::migrate_db(*_d->_db,
+                                    tim::EXPECTED_DB_SCHEMA_VERSION,
+                                    settings.migrations_dir))
         {
             TIM_TRACE(error,
-                      TIM_TR("Database schema version %u does not match expected %u; "
+                      TIM_TR("Database schema version %u does not match expected %u "
+                             "and automatic migration failed; "
                              "rerun db/create-db.sh to regenerate '%s'. "
                              "Persistence is disabled for this run."_en,
-                             "Версия схемы БД %u не совпадает с ожидаемой %u; "
+                             "Версия схемы БД %u не совпадает с ожидаемой %u, "
+                             "а автоматическая миграция не удалась; "
                              "перезапустите db/create-db.sh для пересоздания '%s'. "
                              "Хранение данных в этом запуске отключено."_ru),
                       db_version, tim::EXPECTED_DB_SCHEMA_VERSION,

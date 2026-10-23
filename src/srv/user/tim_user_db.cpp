@@ -22,7 +22,8 @@
  */
 bool tim::ensure_user(tim::sqlite_db &db, const std::string &user_id_canon)
 {
-    tim::sqlite_query q(&db, "INSERT OR IGNORE INTO user (id) VALUES (?)");
+    tim::sqlite_query q(&db, "INSERT OR IGNORE INTO user (id, created_at) "
+                       "VALUES (?, CAST(unixepoch('subsec') * 1000 AS INTEGER))");
     if (!q.prepare())
     {
         TIM_TRACE(error,

@@ -16,7 +16,11 @@ CREATE TABLE user
     pub_key VARCHAR UNIQUE, -- Public key.
     nick VARCHAR UNIQUE,
     icon VARCHAR,
-    motto VARCHAR
+    motto VARCHAR,
+
+    -- Метка времени создания записи (мс). Появилась в схеме версии 3;
+    -- для баз версии 2 см. db/migrate-2-to-3.sql.
+    created_at INTEGER NOT NULL DEFAULT (CAST(unixepoch('subsec') * 1000 AS INTEGER))
 );
 CREATE UNIQUE INDEX user_pub_key ON user(pub_key);
 CREATE UNIQUE INDEX user_nick ON user(nick);

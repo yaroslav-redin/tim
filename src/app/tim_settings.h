@@ -31,6 +31,8 @@ struct settings
     /** Рабочий каталог: БД, SSH host-key, история команд, TLS-сертификаты.
      *  По умолчанию $HOME/.tim. */
     std::filesystem::path data_dir{};
+    /** Каталог со скриптами миграции схемы БД (migrate-N-to-M.sql). */
+    std::filesystem::path migrations_dir = "/usr/share/tim/migrations";
     /** Язык, на котором TIM_TR выдаёт пользовательские сообщения. */
     tim::language language = tim::language::ru_ru;
 
