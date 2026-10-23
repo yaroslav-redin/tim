@@ -22,7 +22,7 @@ INCLUDES="-I../src -I../src/mqtt -I../src/types -I../src/signal -I../src/tools \
           -I../src/app -I../src/3rdparty/jsoncpp -I../src/3rdparty/mongoose \
           -I../src/srv"
 
-DEFINES="-DTIM_OS_LINUX -DJSON_NOEXCEPTION=1 -DJSON_DIAGNOSTICS=1 -DJSON_DIAGNOSTIC_POSITIONS=1"
+DEFINES="-DTIM_DB_DIR=\"$(pwd)/../db\" -DTIM_OS_LINUX -DJSON_NOEXCEPTION=1 -DJSON_DIAGNOSTICS=1 -DJSON_DIAGNOSTIC_POSITIONS=1"
 
 # Те же флаги SQLite, что и в основной сборке (см. build/linux/rules.mk).
 SQLITE_DEFINES="-DSQLITE_THREADSAFE=0 \
@@ -63,6 +63,7 @@ $CXX -std=c++17 -Wall -Wextra -Werror -Wno-unused-parameter $OPT $INCLUDES $DEFI
     test_mqtt_topic.cpp \
     test_service_base.cpp \
     test_signal.cpp \
+    test_sqlite_migrate.cpp \
     test_sqlite_tx.cpp \
     test_uuid.cpp \
     ../src/mqtt/tim_mqtt_topic.cpp \
@@ -70,6 +71,7 @@ $CXX -std=c++17 -Wall -Wextra -Werror -Wno-unused-parameter $OPT $INCLUDES $DEFI
     ../src/srv/tim_service.cpp \
     ../src/types/tim_uuid.cpp \
     ../src/db/sqlite/tim_sqlite_db.cpp \
+    ../src/db/sqlite/tim_sqlite_migrate.cpp \
     ../src/db/sqlite/tim_sqlite_query.cpp \
     ../src/db/sqlite/tim_sqlite_tx.cpp \
     ../src/tools/tim_file_tools.cpp \
